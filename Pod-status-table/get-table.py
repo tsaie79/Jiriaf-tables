@@ -51,12 +51,14 @@ while True:
     # Update the 'Duration' column with data from 'kubectl get pods'
     for row_get in new_data_get:
         job_name = row_get[0]
+        status = row_get[2] 
         duration = row_get[-1]
 
         # Find the corresponding row in the data and update the duration
         for existing_row in data:
             if existing_row[0] == job_name:
-                existing_row[-1] = duration
+                if status == 'Running':
+                    existing_row[-1] = duration
                 break
 
     # Generate the table
