@@ -106,6 +106,6 @@ for i in ret.items:
     table_data.append([name, allocatable_cpu, allocated_cpu, available_cpu, new_memory['allocatable_memory'], new_memory['allocated_memory'], new_memory['available_memory'], walltime, nodetype, site, alivetime, status])
 
 # Generate the table
-table = tabulate(table_data, headers=['Node', 'Allocatable CPU', 'Allocated CPU', 'Available CPU', 'Allocatable Memory', 'Allocated Memory', 'Available Memory', 'Walltime', 'Nodetype', 'Site', 'Alivetime', 'Status'], tablefmt='fancy_grid')
+table = tabulate(table_data, headers=['Node', 'Total CPU', 'Allocated CPU', 'Available CPU', 'Total Memory', 'Allocated Memory', 'Available Memory', 'Walltime', 'Nodetype', 'Site', 'Alivetime', 'Status'], tablefmt='fancy_grid')
 
 print(table)
