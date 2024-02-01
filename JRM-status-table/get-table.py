@@ -18,35 +18,23 @@ while True:
 
     for i in ret.items:
         name = i.metadata.name
-        # Update the 'Duration' column with data from 'kubectl get pods'
-for row_get in new_data_get:
-    job_name = row_get[0]
-    status = row_get[2]  # the 'STATUS' column
-    duration = row_get[-1]
-
-    # Find the corresponding row in the data and update the duration
-    for existing_row in data:
-        if existing_row[0] == job_name:
-            if status == 'Running':
-                existing_row[-1] = duration
-            break
         # Get allocatable resources
         if i.status.allocatable.get('cpu', 0)[-1:] == 'm':
-            allocatable_cpu = int(i.status.allocatable['cpu'][:-1]) / 1000
+            total_cpu = int(i.status.allocatable['cpu'][:-1]) / 1000
         else:
-            allocatable_cpu = int(i.status.allocatable['cpu'])
+            total_cpu = int(i.status.allocatable['cpu'])
 
 
         if type(i.status.allocatable.get('memory', 0)) == int:
-            allocatable_memory = i.status.allocatable['memory']
+            total_memory = i.status.allocatable['memory']
         elif i.status.allocatable.get('memory', 0)[-2:] == 'Ki':
-            allocatable_memory = int(i.status.allocatable['memory'][:-2]) * 1024
+            total_memory = int(i.status.allocatable['memory'][:-2]) * 1024
         elif i.status.allocatable.get('memory', 0)[-2:] == 'Mi':
-            allocatable_memory = int(i.status.allocatable['memory'][:-2]) * 1024 * 1024
+            total_memory = int(i.status.allocatable['memory'][:-2]) * 1024 * 1024
         elif i.status.allocatable.get('memory', 0)[-2:] == 'Gi':
-            allocatable_memory = int(i.status.allocatable['memory'][:-2]) * 1024 * 1024 * 1024
+            total_memory = int(i.status.allocatable['memory'][:-2]) * 1024 * 1024 * 1024
         else:
-            allocatable_memory = int(i.status.allocatable['memory'][:-2])
+            total_memory = int(i.status.allocatable['memory'][:-2])
 
 
         # Get all pods in the node
@@ -83,8 +71,8 @@ for row_get in new_data_get:
                         allocated_memory += int(requests.get('memory', 0)[:-2])
 
         # Calculate available resources
-        available_cpu = allocatable_cpu - allocated_cpu
-        available_memory = allocatable_memory - allocated_memory
+        available_cpu = total_cpu - allocated_cpu
+        available_memory = total_memory - allocated_memory
 
         walltime = i.metadata.labels.get('jiriaf.walltime', 'N/A')
         nodetype = i.metadata.labels.get('jiriaf.nodetype', 'N/A')
@@ -98,7 +86,7 @@ for row_get in new_data_get:
                 status = "Ready" if condition.status == "True" else "NotReady"
 
         # convert memory to Mi and add the unit at the end
-        new_memory = {"allocatable_memory": allocatable_memory, "allocated_memory": allocated_memory, "available_memory": available_memory}
+        new_memory = {"total_memory": total_memory, "allocated_memory": allocated_memory, "available_memory": available_memory}
         for memory, value in new_memory.items():
             if value < 1024:
                 new_memory[memory] = f"{value/1024}Ki"
@@ -118,7 +106,7 @@ for row_get in new_data_get:
 
 
         # Add the data to the table
-        table_data.append([name, allocatable_cpu, allocated_cpu, available_cpu, new_memory['allocatable_memory'], new_memory['allocated_memory'], new_memory['available_memory'], walltime, nodetype, site, alivetime, status])
+        table_data.append([name, total_cpu, allocated_cpu, available_cpu, new_memory['total_memory'], new_memory['allocated_memory'], new_memory['available_memory'], walltime, nodetype, site, alivetime, status])
 
     # Generate the table
     table = tabulate(table_data, headers=['Node', 'Total CPU', 'Allocated CPU', 'Available CPU', 'Total Memory', 'Allocated Memory', 'Available Memory', 'Walltime', 'Nodetype', 'Site', 'Alivetime', 'Status'], tablefmt='fancy_grid')
