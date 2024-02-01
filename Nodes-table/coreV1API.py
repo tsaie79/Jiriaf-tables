@@ -1,14 +1,13 @@
 from kubernetes import client, config
 from tabulate import tabulate
+import time
+
+# Configure kubernetes client
+config.load_kube_config()
+v1 = client.CoreV1Api()
 
 
-import time 
-
-while True:
-    # Configure kubernetes client
-    config.load_kube_config()
-
-    v1 = client.CoreV1Api()
+def get_node_info():
 
     # Get the list of nodes
     ret = v1.list_node(watch=False)
@@ -113,5 +112,10 @@ while True:
 
     print(table)
 
-    time.sleep(5)  # wait for 5 seconds before the next iteration
+def main():
+    while True:
+        get_node_info()
+        time.sleep(5)  # wait for 5 seconds before the next iteration
 
+if __name__ == "__main__":
+    main()
