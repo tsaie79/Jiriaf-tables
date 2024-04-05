@@ -35,7 +35,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip install -r /workspaces/jiriaf-tables/requirements.txt",
+	"postCreateCommand": "pip install -r /workspaces/Jiriaf-tables/requirements.txt",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
