@@ -1,1 +1,1 @@
-pip freeze > /workspaces/jiriaf-tables/requirements.txt
+pip freeze > /workspaces/Jiriaf-tables/requirements.txt
